@@ -2,7 +2,7 @@ const colors = require('colors');
 
 colors.setTheme({
     silly: 'rainbow',
-    log: 'grey',
+    log: 'white',
     verbose: 'cyan',
     prompt: 'grey',
     info: 'green',
