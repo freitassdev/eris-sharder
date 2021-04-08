@@ -1,4 +1,9 @@
 const crypto = require('crypto');
+const pThrottle = require('p-throttle');
+const throttle = pThrottle({
+	limit: 120,
+	interval: 500
+});
 
 class SyncedRequestHandler {
     constructor(ipc, options) {
@@ -6,7 +11,7 @@ class SyncedRequestHandler {
         this.timeout = options.timeout + 1000;
     }
 
-    request(method, url, auth, body, file, _route, short) {
+		request: throttle((method, url, auth, body, file, _route, short) => {
         return new Promise((resolve, reject) => {
             let stackCapture = new Error().stack;
 
@@ -38,7 +43,7 @@ class SyncedRequestHandler {
                 this.ipc.unregister(`apiResponse.${requestID}`);
             });
         });
-    }
+    })
 }
 
 module.exports = SyncedRequestHandler;
