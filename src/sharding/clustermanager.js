@@ -6,7 +6,7 @@ const EventEmitter = require("events");
 const Eris = require("eris");
 const Queue = require("../utils/queue.js");
 const pkg = require("../../package.json")
-const pThrottle = require('p-throttle');
+const BucketQueue = require("bucket-queue");
 
 /**
  * 
@@ -25,10 +25,11 @@ class ClusterManager extends EventEmitter {
     constructor(token, mainFile, options) {
         super();
 
-				this.throttle = pThrottle({
-					limit: options.throttleLimit || 120,
-					interval: options.throttleInterval || 500 
-				});
+				this.bucket = BucketQueue({
+					calls: 110,
+					perInterval: 500,
+					maxConcurrent: 20
+				}).start()
 
         this.shardCount = options.shards || 'auto';
         this.firstShardID = options.firstShardID || 0;
@@ -330,7 +331,7 @@ class ClusterManager extends EventEmitter {
                         if (file && file.file) file.file = Buffer.from(file.file, 'base64');
 
                         try {
-                            response = await this.throttle(() => { return this.eris.requestHandler.request(method, url, auth, body, file, _route, short) })();
+                            response = await this.bucket.add(this.eris.requestHandler.request, [method, url, auth, body, file, _route, short])
                         } catch (err) {
                             error = {
                                 code: err.code,
