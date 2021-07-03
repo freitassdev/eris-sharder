@@ -31,6 +31,12 @@ class ClusterManager extends EventEmitter {
 					maxConcurrent: 120
 				}).start()
 
+				if (this.isMaster()) {
+					this.bucketLogger = setInterval(() => {
+						console.log(this.bucket.getState());
+					}, 5000);
+				}
+
         this.shardCount = options.shards || 'auto';
         this.firstShardID = options.firstShardID || 0;
         this.lastShardID = options.lastShardID || 0;
@@ -331,7 +337,10 @@ class ClusterManager extends EventEmitter {
                         if (file && file.file) file.file = Buffer.from(file.file, 'base64');
 
                         try {
-                            response = await this.bucket.add(this.eris.requestHandler.request, [method, url, auth, body, file, _route, short])
+														// response = await this.bucket.add(this.eris.requestHandler.request, [method, url, auth, body, file, _route, short])
+														response = await this.bucket.add(() => {
+																return this.eris.requestHandler.request(method, url, auth, body, file, _route, short)
+														})
                         } catch (err) {
                             error = {
                                 code: err.code,
