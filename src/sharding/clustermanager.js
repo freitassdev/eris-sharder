@@ -26,9 +26,9 @@ class ClusterManager extends EventEmitter {
         super();
 
 				this.bucket = BucketQueue({
-					calls: 110,
+					calls: 120,
 					perInterval: 500,
-					maxConcurrent: 20
+					maxConcurrent: 120
 				}).start()
 
         this.shardCount = options.shards || 'auto';
