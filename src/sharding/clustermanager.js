@@ -26,9 +26,9 @@ class ClusterManager extends EventEmitter {
         super();
 
 				this.bucket = BucketQueue({
-					calls: 80,
+					calls: 55,
 					perInterval: 500,
-					maxConcurrent: 80 
+					// maxConcurrent: 80 
 				}).start()
 
 				if (this.isMaster()) {
