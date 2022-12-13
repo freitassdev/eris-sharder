@@ -337,10 +337,13 @@ class ClusterManager extends EventEmitter {
                         if (file && file.file) file.file = Buffer.from(file.file, 'base64');
 
                         try {
-														// response = await this.bucket.add(this.eris.requestHandler.request, [method, url, auth, body, file, _route, short])
-														response = await this.bucket.add(() => {
-																return this.eris.requestHandler.request(method, url, auth, body, file, _route, short)
-														})
+			if (url?.includes("/interactions/")) {
+                                response = await this.eris.requestHandler.request(method, url, auth, body, file, _route, short);
+                            } else {
+                                response = await this.bucket.add(() => {
+                                    return this.eris.requestHandler.request(method, url, auth, body, file, _route, short)
+                                })
+                            }
                         } catch (err) {
                             error = {
                                 code: err.code,
