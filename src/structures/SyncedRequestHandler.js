@@ -3,7 +3,7 @@ const crypto = require('crypto');
 class SyncedRequestHandler {
     constructor(ipc, options) {
         this.ipc = ipc;
-        this.timeout = options.timeout + 10000;
+        this.timeout = options.timeout + 1000;
     }
 
 		request (method, url, auth, body, file, _route, short) {
